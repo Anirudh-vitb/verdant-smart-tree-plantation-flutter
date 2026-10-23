@@ -105,12 +105,40 @@ flutter run
 flutter run -d chrome
 ```
 
-Build an installable APK:
+### Building the release APK
+
+The Android build needs **NDK 28.2.13676358**, the default `ndkVersion` of
+Flutter 3.47.7, which `android/app/build.gradle.kts` uses through
+`ndkVersion = flutter.ndkVersion`. It also needs Android SDK platform 36.
+
+**Easiest on Windows:** run the repair-and-build script. It checks the
+toolchain, installs the NDK if it is missing (verifying the files on disk),
+runs analyze and the tests, builds the APK and prints its size and package details.
+A log is saved in `build-repair-logs\`.
 
 ```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\build-android-release.ps1
+# Optional: -FlutterBat <path\to\flutter.bat> -SdkRoot <path\to\Android\sdk>
+```
+
+Or manually:
+
+```powershell
+# Package ids contain ';', so keep them in quotes. Note: "--install=ndk;..." is NOT valid syntax.
+& "$env:LOCALAPPDATA\Android\sdk\cmdline-tools\latest\bin\sdkmanager.bat" --% "ndk;28.2.13676358"
 flutter build apk --release
 # Output: build\app\outputs\flutter-apk\app-release.apk
 ```
+
+You can also install the NDK from Android Studio: **Settings → Languages & Frameworks →
+Android SDK → SDK Tools → Show Package Details → NDK (Side by side) → 28.2.13676358 → Apply**.
+
+**Prebuilt APK:** every push to GitHub runs the *Android release APK* workflow
+(`.github/workflows/android-release.yml`). It builds and verifies the APK on a clean
+machine and attaches it as the `app-release-apk` artifact on the run's page under
+the repository's **Actions** tab. The release build is signed with the debug key
+(Flutter's default), which is fine for installing on your own phone but not for
+the Play Store.
 
 ## 8. Running tests and analysis
 

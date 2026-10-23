@@ -125,6 +125,12 @@ jobs:
           $p = Start-Process cmd.exe -ArgumentList ('/d /c ""' + $mgr + '" "--sdk_root=' + $sdk + '" "sources;android-34""') -NoNewWindow -Wait -PassThru -RedirectStandardOutput out2.txt -RedirectStandardError err2.txt
           Show out2.txt; Show err2.txt
           Write-Host "RESULT 2: exit=$($p.ExitCode) installed=$(Test-Path (Join-Path $pkg2 'source.properties'))"
+          Write-Host '--- 3. PowerShell stop-parsing token (--%) as documented in README ---'
+          $pkg3 = Join-Path $sdk 'sources\android-33'
+          & $mgr --% "sources;android-33" *> out3.txt
+          $code3 = $LASTEXITCODE
+          Show out3.txt
+          Write-Host "RESULT 3: exit=$code3 installed=$(Test-Path (Join-Path $pkg3 'source.properties'))"
           $global:LASTEXITCODE = 0
 
       - name: Run scripts/build-android-release.ps1
