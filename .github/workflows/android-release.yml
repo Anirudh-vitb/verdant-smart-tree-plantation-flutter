@@ -17,9 +17,9 @@ jobs:
       PLATFORM: android-36
       BUILD_TOOLS: 36.0.0
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '17'
@@ -80,3 +80,50 @@ jobs:
           name: app-release-apk
           path: build/app/outputs/flutter-apk/app-release.apk
           if-no-files-found: error
+
+  # Runs the same repair-and-build script a Windows developer uses, under
+  # Windows PowerShell 5.1, to prove it works on a real Windows toolchain.
+  windows-script:
+    runs-on: windows-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.47.7
+          channel: stable
+
+      - name: Diagnose sdkmanager argument handling
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Continue'
+          $sdk = $env:ANDROID_HOME
+          $mgr = Join-Path $sdk 'cmdline-tools\latest\bin\sdkmanager.bat'
+          Write-Host "ANDROID_HOME=$sdk"
+          Get-ChildItem (Join-Path $sdk 'cmdline-tools') -Name
+          Get-ChildItem (Join-Path $sdk 'ndk') -Name
+          Write-Host '--- 1. Original form, as run from PowerShell (small package) ---'
+          & $mgr "--sdk_root=$sdk" "--install=sources;android-36" 2>&1 | Select-Object -Last 15
+          Write-Host "exit=$LASTEXITCODE  installed=$(Test-Path (Join-Path $sdk 'sources\android-36\source.properties'))"
+          Write-Host '--- 2. Package id kept in quotes for cmd.exe ---'
+          $p = Start-Process cmd.exe -ArgumentList ('/d /c ""' + $mgr + '" "--sdk_root=' + $sdk + '" "sources;android-36""') -NoNewWindow -Wait -PassThru
+          Write-Host "exit=$($p.ExitCode)  installed=$(Test-Path (Join-Path $sdk 'sources\android-36\source.properties'))"
+
+      - name: Run scripts/build-android-release.ps1
+        shell: powershell
+        run: |
+          .\scripts\build-android-release.ps1 -FlutterBat "$env:FLUTTER_ROOT\bin\flutter.bat" -SdkRoot $env:ANDROID_HOME
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          if (-not (Test-Path build\app\outputs\flutter-apk\app-release.apk)) { exit 1 }
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: windows-build-log
+          path: build-repair-logs/
