@@ -101,19 +101,31 @@ jobs:
 
       - name: Diagnose sdkmanager argument handling
         shell: powershell
+        continue-on-error: true
         run: |
           $ErrorActionPreference = 'Continue'
           $sdk = $env:ANDROID_HOME
           $mgr = Join-Path $sdk 'cmdline-tools\latest\bin\sdkmanager.bat'
+          $pkg1 = Join-Path $sdk 'sources\android-35'
+          $pkg2 = Join-Path $sdk 'sources\android-34'
+          function Show([string]$file) {
+            # Drop progress-bar lines so the real messages stay readable.
+            Get-Content $file | Where-Object { $_ -notmatch '%' -and $_.Trim() } | Select-Object -First 25
+          }
           Write-Host "ANDROID_HOME=$sdk"
-          Get-ChildItem (Join-Path $sdk 'cmdline-tools') -Name
-          Get-ChildItem (Join-Path $sdk 'ndk') -Name
-          Write-Host '--- 1. Original form, as run from PowerShell (small package) ---'
-          & $mgr "--sdk_root=$sdk" "--install=sources;android-36" 2>&1 | Select-Object -Last 15
-          Write-Host "exit=$LASTEXITCODE  installed=$(Test-Path (Join-Path $sdk 'sources\android-36\source.properties'))"
+          Write-Host "cmdline-tools: $((Get-ChildItem (Join-Path $sdk 'cmdline-tools') -Name) -join ', ')"
+          Write-Host "ndk:           $((Get-ChildItem (Join-Path $sdk 'ndk') -Name) -join ', ')"
+          Write-Host "before: sources;android-35=$(Test-Path $pkg1) sources;android-34=$(Test-Path $pkg2)"
+          Write-Host '--- 1. Original form, called directly from PowerShell ---'
+          & $mgr "--sdk_root=$sdk" "--install=sources;android-35" *> out1.txt
+          $code1 = $LASTEXITCODE
+          Show out1.txt
+          Write-Host "RESULT 1: exit=$code1 installed=$(Test-Path (Join-Path $pkg1 'source.properties'))"
           Write-Host '--- 2. Package id kept in quotes for cmd.exe ---'
-          $p = Start-Process cmd.exe -ArgumentList ('/d /c ""' + $mgr + '" "--sdk_root=' + $sdk + '" "sources;android-36""') -NoNewWindow -Wait -PassThru
-          Write-Host "exit=$($p.ExitCode)  installed=$(Test-Path (Join-Path $sdk 'sources\android-36\source.properties'))"
+          $p = Start-Process cmd.exe -ArgumentList ('/d /c ""' + $mgr + '" "--sdk_root=' + $sdk + '" "sources;android-34""') -NoNewWindow -Wait -PassThru -RedirectStandardOutput out2.txt -RedirectStandardError err2.txt
+          Show out2.txt; Show err2.txt
+          Write-Host "RESULT 2: exit=$($p.ExitCode) installed=$(Test-Path (Join-Path $pkg2 'source.properties'))"
+          $global:LASTEXITCODE = 0
 
       - name: Run scripts/build-android-release.ps1
         shell: powershell
