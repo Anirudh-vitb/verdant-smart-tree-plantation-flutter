@@ -127,9 +127,9 @@ jobs:
           Write-Host "RESULT 2: exit=$($p.ExitCode) installed=$(Test-Path (Join-Path $pkg2 'source.properties'))"
           Write-Host '--- 3. PowerShell stop-parsing token (--%) as documented in README ---'
           $pkg3 = Join-Path $sdk 'sources\android-33'
-          & $mgr --% "sources;android-33" *> out3.txt
+          # Everything after --% is passed literally, so no redirection here.
+          & $mgr --% "sources;android-33"
           $code3 = $LASTEXITCODE
-          Show out3.txt
           Write-Host "RESULT 3: exit=$code3 installed=$(Test-Path (Join-Path $pkg3 'source.properties'))"
           $global:LASTEXITCODE = 0
 
