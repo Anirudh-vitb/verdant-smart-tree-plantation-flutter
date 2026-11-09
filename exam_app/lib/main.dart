@@ -1,25 +1,14 @@
-// MODULE 1: App entry point
+// MODULE 1: Main (app starts here)
 import 'package:flutter/material.dart';
-
-import 'screens/login_screen.dart';
+import 'home_screen.dart';
 
 void main() {
-  runApp(const PlantationApp());
-}
-
-class PlantationApp extends StatelessWidget {
-  const PlantationApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
+  runApp(
+    MaterialApp(
       title: 'Smart Tree Plantation',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
-        useMaterial3: true,
-      ),
-      home: const LoginScreen(),
-    );
-  }
+      theme: ThemeData(colorSchemeSeed: Colors.green),
+      home: HomeScreen(),
+    ),
+  );
 }

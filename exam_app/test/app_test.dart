@@ -1,47 +1,39 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:verdant_exam/main.dart';
-import 'package:verdant_exam/models/plantation_data.dart';
+import 'package:verdant_exam/data.dart';
+import 'package:verdant_exam/home_screen.dart';
 
-Future<void> login(WidgetTester tester) async {
-  await tester.pumpWidget(const PlantationApp());
-  await tester.enterText(find.byType(TextFormField).at(0), 'student@college.edu');
-  await tester.enterText(find.byType(TextFormField).at(1), 'secret123');
-  await tester.tap(find.text('Login'));
+Future<void> openApp(WidgetTester tester) async {
+  await tester.pumpWidget(MaterialApp(home: HomeScreen()));
+}
+
+Future<void> openTab(WidgetTester tester, String label) async {
+  await tester.tap(find.text(label).last);
   await tester.pumpAndSettle();
 }
 
 void main() {
-  testWidgets('login shows errors for empty fields', (tester) async {
-    await tester.pumpWidget(const PlantationApp());
-    await tester.tap(find.text('Login'));
-    await tester.pump();
-    expect(find.text('Enter your email'), findsOneWidget);
-    expect(find.text('Enter your password'), findsOneWidget);
-  });
-
-  testWidgets('login opens the dashboard with live counts', (tester) async {
-    await login(tester);
-    expect(find.text('Dashboard'), findsWidgets);
+  testWidgets('dashboard shows counts from the data', (tester) async {
+    await openApp(tester);
+    expect(find.text('Total Trees'), findsOneWidget);
     expect(find.text('${trees.length}'), findsWidgets);
   });
 
-  testWidgets('add a tree and see it in the list', (tester) async {
-    await login(tester);
-    await tester.tap(find.text('Trees'));
-    await tester.pumpAndSettle();
+  testWidgets('add tree needs all fields, then appears in the list', (tester) async {
+    await openApp(tester);
+    await openTab(tester, 'Trees');
     await tester.tap(find.byIcon(Icons.add));
     await tester.pumpAndSettle();
 
     await tester.tap(find.text('Save Tree'));
     await tester.pump();
-    expect(find.text('Enter tree name'), findsOneWidget);
+    expect(find.text('Please fill all fields'), findsOneWidget);
 
-    await tester.enterText(find.byType(TextFormField).at(0), 'Pond Jamun');
-    await tester.enterText(find.byType(TextFormField).at(1), 'Near the pond');
-    await tester.tap(find.text('Species'));
+    await tester.enterText(find.byType(TextField).at(0), 'Pond Jamun');
+    await tester.enterText(find.byType(TextField).at(1), 'Near the pond');
+    await tester.tap(find.text('Select planting date'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Jamun').last);
+    await tester.tap(find.text('OK'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Save Tree'));
     await tester.pumpAndSettle();
@@ -49,40 +41,47 @@ void main() {
     expect(find.text('Pond Jamun'), findsOneWidget);
   });
 
-  testWidgets('record watering and delete a tree', (tester) async {
-    await login(tester);
-    await tester.tap(find.text('Trees'));
-    await tester.pumpAndSettle();
+  testWidgets('search filters the tree list', (tester) async {
+    await openApp(tester);
+    await openTab(tester, 'Trees');
+    await tester.enterText(find.byType(TextField), 'mango');
+    await tester.pump();
+    expect(find.text('Library Mango'), findsOneWidget);
+    expect(find.text('Gate Neem'), findsNothing);
+  });
+
+  testWidgets('record watering, then delete the tree', (tester) async {
+    await openApp(tester);
+    await openTab(tester, 'Trees');
     await tester.tap(find.text('Gate Neem'));
     await tester.pumpAndSettle();
 
     await tester.tap(find.text('Record Watering'));
     await tester.pumpAndSettle();
-    expect(find.text('Watering history (1)'), findsOneWidget);
+    await tester.enterText(find.byType(TextField), '10');
+    await tester.tap(find.text('Save'));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('10 litres on'), findsOneWidget);
 
     await tester.tap(find.byIcon(Icons.delete));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Delete'));
+    await tester.tap(find.text('Yes'));
     await tester.pumpAndSettle();
     expect(find.text('Gate Neem'), findsNothing);
   });
 
-  testWidgets('add and complete a maintenance task', (tester) async {
-    await login(tester);
-    await tester.tap(find.text('Maintenance'));
+  testWidgets('add a task and mark it done', (tester) async {
+    await openApp(tester);
+    await openTab(tester, 'Maintenance');
+    await tester.tap(find.byIcon(Icons.add));
     await tester.pumpAndSettle();
-    final before = tasks.where((t) => !t.isDone).length;
-
-    await tester.tap(find.byIcon(Icons.add_task));
-    await tester.pumpAndSettle();
-    await tester.enterText(find.byType(TextField).last, 'Prune the neem');
-    await tester.tap(find.text('Add'));
+    await tester.enterText(find.byType(TextField), 'Prune the neem');
+    await tester.tap(find.text('Save Task'));
     await tester.pumpAndSettle();
     expect(find.text('Prune the neem'), findsOneWidget);
-    expect(find.text('Maintenance (${before + 1} pending)'), findsOneWidget);
 
-    await tester.tap(find.byType(Checkbox).first);
+    await tester.tap(find.byType(Checkbox).last);
     await tester.pumpAndSettle();
-    expect(find.text('Maintenance ($before pending)'), findsOneWidget);
+    expect(tasks.last.done, isTrue);
   });
 }

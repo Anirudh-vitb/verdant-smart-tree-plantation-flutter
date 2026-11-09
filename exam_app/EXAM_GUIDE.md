@@ -1,11 +1,11 @@
-# Exam Guide — Smart Tree Plantation (exam version)
+# Exam Guide: Smart Tree Plantation (exam version)
 
-This folder is a **small, hand-writable version** of the project for the Flutter lab exam.
-It has 11 modules and 660 lines in total. It uses only built-in Flutter widgets and `setState`,
-with no extra packages, so every file can be written from memory.
+This folder is the **easy, hand-writable version** of the project for the Flutter lab exam.
+It has the **same modules as the main project**, written as simply as possible:
 
-> The full project (Provider, local storage, 63 tests) is in the main `lib/` folder.
-> Use **this** folder for writing in the exam.
+- 10 short files, 425 lines in total, all directly in `lib/`
+- only built-in Flutter widgets and `setState`; no packages, no `const`, no `key`
+- every page follows the same pattern, so once you know one page you know them all
 
 ## How to run
 
@@ -15,123 +15,149 @@ flutter pub get
 flutter run
 ```
 
-Login with any email that contains `@` and a password of 6 or more characters.
+## Modules (same as the main project)
 
-## Modules
-
-| No. | File | Lines | What it shows | Key widgets / concepts |
+| No. | File | Lines | Main project screen | What it does |
 |---|---|---|---|---|
-| 1 | `lib/main.dart` | 25 | App entry point | `runApp`, `MaterialApp`, `ThemeData` |
-| 2 | `lib/models/tree.dart` | 17 | Tree data class | class, constructor, `required` |
-| 3 | `lib/models/task.dart` | 14 | Task data class | default value `isDone = false` |
-| 4 | `lib/models/plantation_data.dart` | 46 | Shared data + helpers | `List`, sample data, `formatDate`, `healthColor` |
-| 5 | `lib/screens/login_screen.dart` | 89 | **Login page** | `Form`, `GlobalKey<FormState>`, `TextFormField`, `validator`, `obscureText`, `Navigator.pushReplacement` |
-| 6 | `lib/screens/home_screen.dart` | 40 | **Bottom navigation** | `BottomNavigationBar`, `currentIndex`, `setState` |
-| 7 | `lib/screens/dashboard_screen.dart` | 62 | **Dashboard** | `GridView.count`, `Card`, `where(...).length` |
-| 8 | `lib/screens/tree_list_screen.dart` | 83 | **List + search** | `ListView.builder`, `TextField` `onChanged`, `ListTile`, `FloatingActionButton` |
-| 9 | `lib/screens/add_tree_screen.dart` | 100 | **Add form** | `DropdownButtonFormField`, `showDatePicker`, `SnackBar`, `Navigator.pop` |
-| 10 | `lib/screens/tree_detail_screen.dart` | 88 | **Details + delete** | passing data to a screen, `AlertDialog`, `showDialog`, `FloatingActionButton.extended` |
-| 11 | `lib/screens/maintenance_screen.dart` | 96 | **Task list (CRUD)** | `CheckboxListTile`, add-task dialog, delete, `TextDecoration.lineThrough` |
+| 1 | `main.dart` | 14 | `main.dart` / `app.dart` | Starts the app, green theme |
+| 2 | `data.dart` | 26 | `models/` | `Tree` and `Task` classes + sample lists |
+| 3 | `home_screen.dart` | 31 | Navigation (home shell) | Bottom bar: Dashboard, Trees, Maintenance |
+| 4 | `dashboard_screen.dart` | 34 | Dashboard | Total trees, healthy, need attention, pending tasks |
+| 5 | `trees_screen.dart` | 59 | Trees list | Search box + list of trees + add button |
+| 6 | `add_tree_screen.dart` | 71 | Add tree form | Name, location, species, health, date picker, save |
+| 7 | `tree_detail_screen.dart` | 65 | Tree details | Details, watering history, delete with confirmation |
+| 8 | `watering_screen.dart` | 39 | Record watering | Litres box, saves "10 litres on 9/11/2026" |
+| 9 | `maintenance_screen.dart` | 42 | Maintenance | Task list, tick when done, delete |
+| 10 | `add_task_screen.dart` | 44 | Task form | Task title + type dropdown, save |
 
-## External exam: writing the full code
+The main project has extra features (sort, health filter, edit, saving to the phone). The exam
+version keeps only the core of each screen so it is easy to write.
 
-Write the files in this order. Each step only uses files written before it.
+## External exam: write the full app
 
-1. `main.dart`. It points to `LoginScreen`.
-2. The models: `tree.dart`, `task.dart`, `plantation_data.dart`.
-3. `login_screen.dart`, which opens `HomeScreen`.
-4. `home_screen.dart`, with the 3 tabs.
-5. `dashboard_screen.dart`, `tree_list_screen.dart`, `maintenance_screen.dart`, the three tab pages.
-6. `add_tree_screen.dart` and `tree_detail_screen.dart`, which open from the tree list.
+Write the files in this order:
 
-If time is short, write modules 1–8 plus 11. That is a complete working app: login, navigation,
-dashboard, list with search, and tasks. Then add modules 9 and 10.
+1. `data.dart`: the data comes first.
+2. `main.dart`
+3. `home_screen.dart`
+4. `dashboard_screen.dart`
+5. `trees_screen.dart`, then `add_tree_screen.dart`, `tree_detail_screen.dart` and `watering_screen.dart`
+6. `maintenance_screen.dart`, then `add_task_screen.dart`
 
 ## Internal exam: "write module X"
 
-When asked for one page, write that file plus the model it uses. For example, "Write the
-add tree page" means module 9 plus module 2, `tree.dart`. Say that `trees` and `speciesList` come
-from `plantation_data.dart`.
+Write that one file. If it uses `Tree` or `Task`, also write `data.dart` (module 2, 26 lines).
 
-| If asked… | Write module(s) |
+| If ma'am asks for… | Write |
 |---|---|
-| Login page / form validation | 5 |
-| Navigation / bottom navigation bar | 6 |
-| Dashboard / GridView / cards | 7 (+ 4) |
-| ListView / search | 8 (+ 2, 4) |
-| Form with dropdown and date picker | 9 (+ 2) |
-| Passing data between screens / dialog | 10 (+ 2) |
-| CRUD / checkbox list / to-do style page | 11 (+ 3) |
-| Model class | 2 or 3 |
+| Dashboard | 4 (+ 2) |
+| Navigation / bottom navigation bar | 3 |
+| List page / ListView / search | 5 (+ 2) |
+| Form / add page / dropdown / date picker | 6 (+ 2) |
+| Details page / passing data / alert dialog | 7 (+ 2) |
+| Record watering | 8 (+ 2) |
+| Maintenance / checkbox list / delete | 9 (+ 2) |
+| Add task | 10 (+ 2) |
+| Model class | 2 |
 
-## Patterns to memorise
+## The 6 things to remember
 
-Almost every page is one of two patterns.
+Every page is built from these six pieces. Learn them and you can write any module.
 
-**Stateful page (anything that changes):**
+**1. A page that changes (StatefulWidget):**
 
 ```dart
-class XScreen extends StatefulWidget {
-  const XScreen({super.key});
-
+class TreesScreen extends StatefulWidget {
   @override
-  State<XScreen> createState() => _XScreenState();
+  State<TreesScreen> createState() => _TreesScreenState();
 }
 
-class _XScreenState extends State<XScreen> {
-  // variables here
-
+class _TreesScreenState extends State<TreesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('X')),
+      appBar: AppBar(title: Text('Trees')),
       body: ...,
     );
   }
 }
 ```
 
-**Form with validation (login, add tree):**
+A page that never changes (Dashboard, Watering) is simpler: `class X extends StatelessWidget` with only `build`.
+
+**2. Text box:**
 
 ```dart
-final _formKey = GlobalKey<FormState>();
-
-Form(
-  key: _formKey,
-  child: TextFormField(
-    validator: (value) => value!.isEmpty ? 'Enter name' : null,
-  ),
-);
-
-if (_formKey.currentState!.validate()) { /* save */ }
+var nameC = TextEditingController();
+TextField(controller: nameC, decoration: InputDecoration(labelText: 'Tree name'))
+// read it with: nameC.text
 ```
 
-**Navigation:**
+**3. Dropdown:**
 
 ```dart
-Navigator.push(context, MaterialPageRoute(builder: (context) => const AddTreeScreen()));
-Navigator.pop(context);                       // go back
-Navigator.pushReplacement(context, ...);     // login -> home (no back button)
+String species = 'Neem';
+DropdownButton<String>(
+  value: species,
+  items: ['Neem', 'Mango', 'Peepal'].map((s) => DropdownMenuItem(value: s, child: Text(s))).toList(),
+  onChanged: (value) => setState(() => species = value!),
+)
 ```
 
-**Refresh a list after coming back:** `await Navigator.push(...); setState(() {});`
+**4. List:**
+
+```dart
+ListView.builder(
+  itemCount: trees.length,
+  itemBuilder: (context, i) {
+    return ListTile(title: Text(trees[i].name));
+  },
+)
+```
+
+**5. Go to another page, and refresh when you come back:**
+
+```dart
+Navigator.push(context, MaterialPageRoute(builder: (context) => AddTreeScreen()))
+    .then((value) => setState(() {}));
+
+Navigator.pop(context); // go back
+```
+
+**6. Save button that checks for empty fields:**
+
+```dart
+if (nameC.text.isEmpty) {
+  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Please fill all fields')));
+  return;
+}
+trees.add(Tree(nameC.text, species, locationC.text, health, date));
+Navigator.pop(context);
+```
+
+## Memory tricks
+
+- Every file starts with `import 'package:flutter/material.dart';` and `import 'data.dart';`.
+- Every page returns a `Scaffold` with an `AppBar(title: Text('...'))`.
+- Add pages are always: text fields → dropdown → save button → `trees.add(...)` or `tasks.add(...)` → `Navigator.pop`.
+- List pages are always: `ListView.builder` + a `FloatingActionButton` that opens the add page.
+- `Tree(name, species, location, health, date)`: remember "**N**ame **S**pecies **L**ocation **H**ealth **D**ate".
 
 ## Viva answers (short)
 
-- **StatelessWidget vs StatefulWidget.** Stateless never changes after it is built (Dashboard).
-  Stateful has data that changes and calls `setState` to redraw (Login, Trees, Maintenance).
+- **StatelessWidget vs StatefulWidget.** Stateless never changes (Dashboard). Stateful has data that
+  changes and calls `setState` to redraw (Trees, Add Tree, Maintenance).
 - **What does `setState` do?** It tells Flutter the data changed, so `build` runs again.
-- **How is data shared between screens?** Through the lists `trees` and `tasks` in
-  `plantation_data.dart`. Every screen reads the same lists.
-- **How is the form validated?** Each `TextFormField` has a `validator` that returns an error text,
-  or `null` when the value is valid. `_formKey.currentState!.validate()` runs all of them.
-- **Why `pushReplacement` after login?** It removes the login page, so Back does not return to it.
-- **Limitation of this version.** Data is kept in memory only and resets when the app restarts.
-  The full project saves it with `shared_preferences`.
+- **How do screens share data?** They all use the lists `trees` and `tasks` from `data.dart`.
+- **What does `.then((value) => setState(() {}))` do?** It refreshes the list after you come back
+  from the add or details page.
+- **What is `TextEditingController`?** It holds what the user typed; `.text` reads it.
+- **Limitation.** Data is kept in memory, so it resets when the app restarts. The main project saves
+  it on the phone with `shared_preferences`.
 
 ## Tests
 
 ```
-flutter test     # 5 widget tests: login validation, dashboard, add tree, watering + delete, tasks
 flutter analyze  # No issues found
+flutter test     # 5 tests: dashboard, add tree, search, watering + delete, tasks
 ```
