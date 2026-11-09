@@ -3,7 +3,7 @@
 This folder is the **easy, hand-writable version** of the project for the Flutter lab exam.
 It has the **same modules as the main project**, written as simply as possible:
 
-- 10 short files, 425 lines in total, all directly in `lib/`
+- 10 short files, 369 lines in total, all directly in `lib/` (no file is longer than 59 lines)
 - only built-in Flutter widgets and `setState`; no packages, no `const`, no `key`
 - every page follows the same pattern, so once you know one page you know them all
 
@@ -24,14 +24,14 @@ flutter run
 | 3 | `home_screen.dart` | 31 | Navigation (home shell) | Bottom bar: Dashboard, Trees, Maintenance |
 | 4 | `dashboard_screen.dart` | 34 | Dashboard | Total trees, healthy, need attention, pending tasks |
 | 5 | `trees_screen.dart` | 59 | Trees list | Search box + list of trees + add button |
-| 6 | `add_tree_screen.dart` | 71 | Add tree form | Name, location, species, health, date picker, save |
-| 7 | `tree_detail_screen.dart` | 65 | Tree details | Details, watering history, delete with confirmation |
+| 6 | `add_tree_screen.dart` | 36 | Add tree form | 5 text boxes (name, species, location, health, date) + save |
+| 7 | `tree_detail_screen.dart` | 47 | Tree details | Details, watering history, Record Watering and Delete buttons |
 | 8 | `watering_screen.dart` | 39 | Record watering | Litres box, saves "10 litres on 9/11/2026" |
-| 9 | `maintenance_screen.dart` | 42 | Maintenance | Task list, tick when done, delete |
+| 9 | `maintenance_screen.dart` | 39 | Maintenance | Task list, tap a task to mark it Done, delete |
 | 10 | `add_task_screen.dart` | 44 | Task form | Task title + type dropdown, save |
 
-The main project has extra features (sort, health filter, edit, saving to the phone). The exam
-version keeps only the core of each screen so it is easy to write.
+The main project has extra features (sort, health filter, edit, date picker, delete confirmation,
+saving to the phone). The exam version keeps only the core of each screen so it is easy to write.
 
 ## External exam: write the full app
 
@@ -53,10 +53,11 @@ Write that one file. If it uses `Tree` or `Task`, also write `data.dart` (module
 | Dashboard | 4 (+ 2) |
 | Navigation / bottom navigation bar | 3 |
 | List page / ListView / search | 5 (+ 2) |
-| Form / add page / dropdown / date picker | 6 (+ 2) |
-| Details page / passing data / alert dialog | 7 (+ 2) |
+| Form / add page | 6 (+ 2) |
+| Dropdown | 10 |
+| Details page / passing data to a page | 7 (+ 2) |
 | Record watering | 8 (+ 2) |
-| Maintenance / checkbox list / delete | 9 (+ 2) |
+| Maintenance / to-do list / delete | 9 (+ 2) |
 | Add task | 10 (+ 2) |
 | Model class | 2 |
 
@@ -124,22 +125,25 @@ Navigator.push(context, MaterialPageRoute(builder: (context) => AddTreeScreen())
 Navigator.pop(context); // go back
 ```
 
-**6. Save button that checks for empty fields:**
+**6. Save button:**
 
 ```dart
-if (nameC.text.isEmpty) {
-  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Please fill all fields')));
-  return;
-}
-trees.add(Tree(nameC.text, species, locationC.text, health, date));
-Navigator.pop(context);
+ElevatedButton(
+  onPressed: () {
+    if (nameC.text.isEmpty) return;          // do nothing if the name is empty
+    trees.add(Tree(nameC.text, speciesC.text, locationC.text, healthC.text, dateC.text));
+    Navigator.pop(context);
+  },
+  child: Text('Save Tree'),
+)
 ```
 
 ## Memory tricks
 
 - Every file starts with `import 'package:flutter/material.dart';` and `import 'data.dart';`.
 - Every page returns a `Scaffold` with an `AppBar(title: Text('...'))`.
-- Add pages are always: text fields → dropdown → save button → `trees.add(...)` or `tasks.add(...)` → `Navigator.pop`.
+- Add pages are always: text boxes → save button → `trees.add(...)` or `tasks.add(...)` → `Navigator.pop`.
+- Add Tree has 5 text boxes that are the same line with a different name: `nameC`, `speciesC`, `locationC`, `healthC`, `dateC`.
 - List pages are always: `ListView.builder` + a `FloatingActionButton` that opens the add page.
 - `Tree(name, species, location, health, date)`: remember "**N**ame **S**pecies **L**ocation **H**ealth **D**ate".
 
@@ -151,6 +155,8 @@ Navigator.pop(context);
 - **How do screens share data?** They all use the lists `trees` and `tasks` from `data.dart`.
 - **What does `.then((value) => setState(() {}))` do?** It refreshes the list after you come back
   from the add or details page.
+- **How is data passed to the details page?** `TreeDetailScreen(list[i])` sends the tapped tree;
+  the page reads it as `widget.tree`.
 - **What is `TextEditingController`?** It holds what the user typed; `.text` reads it.
 - **Limitation.** Data is kept in memory, so it resets when the app restarts. The main project saves
   it on the phone with `shared_preferences`.

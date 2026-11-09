@@ -1,4 +1,4 @@
-// MODULE 9: Maintenance (task list: complete with checkbox, delete)
+// MODULE 9: Maintenance (task list: tap to mark done, delete)
 import 'package:flutter/material.dart';
 import 'data.dart';
 import 'add_task_screen.dart';
@@ -16,16 +16,13 @@ class _MaintenanceScreenState extends State<MaintenanceScreen> {
       body: ListView.builder(
         itemCount: tasks.length,
         itemBuilder: (context, i) {
-          return Card(
-            child: CheckboxListTile(
-              title: Text(tasks[i].title),
-              subtitle: Text(tasks[i].type),
-              value: tasks[i].done,
-              onChanged: (value) => setState(() => tasks[i].done = value!),
-              secondary: IconButton(
-                icon: Icon(Icons.delete),
-                onPressed: () => setState(() => tasks.removeAt(i)),
-              ),
+          return ListTile(
+            title: Text(tasks[i].title),
+            subtitle: Text(tasks[i].done ? 'Done' : 'Pending'),
+            onTap: () => setState(() => tasks[i].done = true),
+            trailing: IconButton(
+              icon: Icon(Icons.delete),
+              onPressed: () => setState(() => tasks.removeAt(i)),
             ),
           );
         },

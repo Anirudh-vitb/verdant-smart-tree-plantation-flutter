@@ -19,22 +19,21 @@ void main() {
     expect(find.text('${trees.length}'), findsWidgets);
   });
 
-  testWidgets('add tree needs all fields, then appears in the list', (tester) async {
+  testWidgets('add a tree and see it in the list', (tester) async {
     await openApp(tester);
     await openTab(tester, 'Trees');
     await tester.tap(find.byIcon(Icons.add));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Save Tree'));
-    await tester.pump();
-    expect(find.text('Please fill all fields'), findsOneWidget);
+    await tester.tap(find.text('Save Tree')); // empty name: nothing saved
+    await tester.pumpAndSettle();
+    expect(find.text('Add Tree'), findsOneWidget);
 
     await tester.enterText(find.byType(TextField).at(0), 'Pond Jamun');
-    await tester.enterText(find.byType(TextField).at(1), 'Near the pond');
-    await tester.tap(find.text('Select planting date'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('OK'));
-    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField).at(1), 'Jamun');
+    await tester.enterText(find.byType(TextField).at(2), 'Near the pond');
+    await tester.enterText(find.byType(TextField).at(3), 'Healthy');
+    await tester.enterText(find.byType(TextField).at(4), '9/11/2026');
     await tester.tap(find.text('Save Tree'));
     await tester.pumpAndSettle();
 
@@ -63,9 +62,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.textContaining('10 litres on'), findsOneWidget);
 
-    await tester.tap(find.byIcon(Icons.delete));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Yes'));
+    await tester.tap(find.text('Delete Tree'));
     await tester.pumpAndSettle();
     expect(find.text('Gate Neem'), findsNothing);
   });
@@ -80,8 +77,9 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Prune the neem'), findsOneWidget);
 
-    await tester.tap(find.byType(Checkbox).last);
+    await tester.tap(find.text('Prune the neem'));
     await tester.pumpAndSettle();
     expect(tasks.last.done, isTrue);
+    expect(find.text('Done'), findsOneWidget);
   });
 }
