@@ -21,6 +21,8 @@ Repository: <https://github.com/Anirudh-vitb/verdant-smart-tree-plantation-flutt
 
 ---
 
+> **Lab exam version:** [`exam_app/`](exam_app/) is a simplified copy of this app (11 short modules, 660 lines, no extra packages) for writing by hand in the exam. See [`exam_app/EXAM_GUIDE.md`](exam_app/EXAM_GUIDE.md).
+
 ## 1. Problem statement
 
 Tree plantation drives often plant hundreds of saplings, but many of them die in the

@@ -61,6 +61,13 @@ jobs:
       - run: flutter analyze
       - run: flutter test
 
+      - name: Analyze and test the exam version
+        working-directory: exam_app
+        run: |
+          flutter pub get
+          flutter analyze
+          flutter test
+
       - name: Build release APK
         run: flutter build apk --release
 

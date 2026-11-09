@@ -14,6 +14,8 @@ analyzer:
     - build/**
     - android/**
     - web/**
+    # The exam version is a separate Flutter project with its own pubspec.
+    - exam_app/**
 
 linter:
   # The lint rules applied to this project can be customized in the
