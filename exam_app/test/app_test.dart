@@ -43,7 +43,7 @@ void main() {
   testWidgets('search filters the tree list', (tester) async {
     await openApp(tester);
     await openTab(tester, 'Trees');
-    await tester.enterText(find.byType(TextField), 'mango');
+    await tester.enterText(find.byType(TextField), 'Mango');
     await tester.pump();
     expect(find.text('Library Mango'), findsOneWidget);
     expect(find.text('Gate Neem'), findsNothing);

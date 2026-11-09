@@ -3,7 +3,7 @@
 This folder is the **easy, hand-writable version** of the project for the Flutter lab exam.
 It has the **same modules as the main project**, written as simply as possible:
 
-- 10 short files, 369 lines in total, all directly in `lib/` (no file is longer than 59 lines)
+- 10 short files, 356 lines in total, all directly in `lib/` (no file is longer than 47 lines)
 - only built-in Flutter widgets and `setState`; no packages, no `const`, no `key`
 - every page follows the same pattern, so once you know one page you know them all
 
@@ -23,7 +23,7 @@ flutter run
 | 2 | `data.dart` | 26 | `models/` | `Tree` and `Task` classes + sample lists |
 | 3 | `home_screen.dart` | 31 | Navigation (home shell) | Bottom bar: Dashboard, Trees, Maintenance |
 | 4 | `dashboard_screen.dart` | 34 | Dashboard | Total trees, healthy, need attention, pending tasks |
-| 5 | `trees_screen.dart` | 59 | Trees list | Search box + list of trees + add button |
+| 5 | `trees_screen.dart` | 46 | Trees list | Search box + list of trees (a `for` loop) + add button |
 | 6 | `add_tree_screen.dart` | 36 | Add tree form | 5 text boxes (name, species, location, health, date) + save |
 | 7 | `tree_detail_screen.dart` | 47 | Tree details | Details, watering history, Record Watering and Delete buttons |
 | 8 | `watering_screen.dart` | 39 | Record watering | Litres box, saves "10 litres on 9/11/2026" |
@@ -105,7 +105,7 @@ DropdownButton<String>(
 )
 ```
 
-**4. List:**
+**4. List with `ListView.builder` (Maintenance page):**
 
 ```dart
 ListView.builder(
@@ -115,6 +115,22 @@ ListView.builder(
   },
 )
 ```
+
+**4b. List with a `for` loop (Trees page and Tree Details), the easiest way:**
+
+```dart
+ListView(
+  children: [
+    TextField(onChanged: (value) => setState(() => search = value)),
+    for (Tree t in trees)
+      if (t.name.contains(search))
+        ListTile(title: Text(t.name), subtitle: Text(t.species)),
+  ],
+)
+```
+
+Read it as: "for every tree, if its name contains the search text, show a ListTile".
+The search matches capital letters exactly, so type `Mango`, not `mango`.
 
 **5. Go to another page, and refresh when you come back:**
 
@@ -144,7 +160,7 @@ ElevatedButton(
 - Every page returns a `Scaffold` with an `AppBar(title: Text('...'))`.
 - Add pages are always: text boxes → save button → `trees.add(...)` or `tasks.add(...)` → `Navigator.pop`.
 - Add Tree has 5 text boxes that are the same line with a different name: `nameC`, `speciesC`, `locationC`, `healthC`, `dateC`.
-- List pages are always: `ListView.builder` + a `FloatingActionButton` that opens the add page.
+- List pages are always: a list + a `FloatingActionButton` that opens the add page.
 - `Tree(name, species, location, health, date)`: remember "**N**ame **S**pecies **L**ocation **H**ealth **D**ate".
 
 ## Viva answers (short)
